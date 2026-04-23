@@ -17,20 +17,17 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicLong;
 
 public class InvoiceService {
 
     private final InvoiceDAO invoiceDAO;
     private final InvoiceLineDAO invoiceLineDAO;
     private final WorkOrderDAO workOrderDAO;
-    private final AtomicLong sequenceCounter;
 
     public InvoiceService() {
         this.invoiceDAO = new InvoiceDAO();
         this.invoiceLineDAO = new InvoiceLineDAO();
         this.workOrderDAO = new WorkOrderDAO();
-        this.sequenceCounter = new AtomicLong(1);
     }
 
     public Invoice issueInvoice(Long workOrderId, User adminUser) {
@@ -93,7 +90,7 @@ public class InvoiceService {
 
             // Create invoice header
             Invoice invoice = new Invoice();
-            invoice.setInvoiceNumber(generateInvoiceNumber());
+            invoice.setInvoiceNumber(generateInvoiceNumber(em));
             invoice.setWorkOrder(workOrder);
             invoice.setUser(workOrder.getUser());
             invoice.setStatus(InvoiceStatus.ISSUED);
@@ -140,7 +137,22 @@ public class InvoiceService {
             em.merge(workOrder);
 
             // Persist invoice (cascade will save lines)
-            em.persist(invoice);
+            // Retry once or twice if a concurrent issuance uses the same number.
+            int attempts = 0;
+            while (true) {
+                try {
+                    if (attempts > 0) {
+                        invoice.setInvoiceNumber(generateInvoiceNumber(em));
+                    }
+                    em.persist(invoice);
+                    break;
+                } catch (jakarta.persistence.PersistenceException pe) {
+                    attempts++;
+                    if (attempts >= 3) {
+                        throw pe;
+                    }
+                }
+            }
 
             return invoice;
         });
@@ -164,6 +176,11 @@ public class InvoiceService {
 
     public List<Invoice> findAll() {
         return invoiceDAO.findAll();
+    }
+
+    /** Payments screen: filter issued invoices by customer name / username. */
+    public List<Invoice> searchInvoicesByCustomerName(String keyword) {
+        return invoiceDAO.findByCustomerNameLike(keyword);
     }
 
     public boolean isWorkOrderInvoiced(Long workOrderId) {
@@ -202,6 +219,22 @@ public class InvoiceService {
         return Optional.ofNullable(inv);
     }
 
+    public void confirmPayment(Long invoiceId) {
+        if (invoiceId == null) {
+            throw new IllegalArgumentException("Invoice ID is required");
+        }
+        JpaUtil.inTransaction(em -> {
+            Invoice inv = em.find(Invoice.class, invoiceId);
+            if (inv == null) {
+                throw new IllegalArgumentException("Invoice not found");
+            }
+            if (inv.getPaidAt() == null) {
+                inv.setPaidAt(LocalDateTime.now());
+                em.merge(inv);
+            }
+        });
+    }
+
     public boolean userOwnsInvoice(Long invoiceId, Long userId) {
         if (invoiceId == null || userId == null) {
             return false;
@@ -214,9 +247,29 @@ public class InvoiceService {
         return count != null && count > 0;
     }
 
-    private String generateInvoiceNumber() {
+    private String generateInvoiceNumber(EntityManager em) {
         String datePart = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-        String sequence = String.format("%06d", sequenceCounter.getAndIncrement());
-        return "INV-" + datePart + "-" + sequence;
+        String prefix = "INV-" + datePart + "-";
+
+        // Because the suffix is zero-padded to 6 digits, DESC string sort matches numeric sort.
+        List<String> last = em.createQuery(
+                        "SELECT i.invoiceNumber FROM Invoice i " +
+                                "WHERE i.invoiceNumber LIKE :p " +
+                                "ORDER BY i.invoiceNumber DESC",
+                        String.class)
+                .setParameter("p", prefix + "%")
+                .setMaxResults(1)
+                .getResultList();
+
+        long nextSeq = 1;
+        if (!last.isEmpty() && last.get(0) != null && last.get(0).startsWith(prefix)) {
+            String suffix = last.get(0).substring(prefix.length());
+            try {
+                nextSeq = Long.parseLong(suffix) + 1;
+            } catch (NumberFormatException ignored) {
+                nextSeq = 1;
+            }
+        }
+        return prefix + String.format("%06d", nextSeq);
     }
 }

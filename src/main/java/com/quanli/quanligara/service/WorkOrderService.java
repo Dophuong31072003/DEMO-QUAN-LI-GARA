@@ -1,5 +1,6 @@
 package com.quanli.quanligara.service;
 
+import com.quanli.quanligara.dao.UserDAO;
 import com.quanli.quanligara.dao.WorkOrderDAO;
 import com.quanli.quanligara.model.*;
 import com.quanli.quanligara.model.enums.WorkOrderStatus;
@@ -57,6 +58,25 @@ public class WorkOrderService {
 
     public Optional<WorkOrder> getOpenWorkOrder(User sessionUser) {
         return workOrderDAO.findOpenByUser(sessionUser);
+    }
+
+    /**
+     * Staff: open or create DRAFT/SUBMITTED work order (quotation) for a customer user id.
+     */
+    public WorkOrder getOrCreateOpenQuotationForCustomer(Long customerUserId) {
+        if (customerUserId == null) {
+            throw new IllegalArgumentException("Customer ID is required");
+        }
+        UserDAO userDAO = new UserDAO();
+        User u = userDAO.findById(customerUserId)
+                .orElseThrow(() -> new IllegalArgumentException("Customer not found"));
+        if (u.isAdmin()) {
+            throw new IllegalArgumentException("User is not a customer account");
+        }
+        if (!u.isActive()) {
+            throw new IllegalArgumentException("Customer account is inactive");
+        }
+        return getOrCreateOpenWorkOrder(u);
     }
 
     public WorkOrder getOrCreateOpenWorkOrder(User sessionUser) {
@@ -184,6 +204,130 @@ public class WorkOrderService {
             WorkOrder w = line.getWorkOrder();
             assertOwnedOpen(w, sessionUser.getId());
             assertEditable(w);
+            w.getServiceLines().remove(line);
+            em.remove(line);
+        });
+    }
+
+    // -- Staff: edit quotation by work order id (no end-user session) --
+
+    public void addPartLineToWorkOrder(Long workOrderId, Long sparePartId, int quantity) {
+        requirePositiveQty(quantity);
+        JpaUtil.inTransaction(em -> {
+            WorkOrder w = em.find(WorkOrder.class, workOrderId);
+            if (w == null) {
+                throw new IllegalArgumentException("Work order not found");
+            }
+            assertEditable(w);
+            Hibernate.initialize(w.getPartLines());
+            SparePart part = em.find(SparePart.class, sparePartId);
+            if (part == null || !part.isActive()) {
+                throw new IllegalArgumentException("Spare part not found or inactive");
+            }
+            for (WorkOrderPartLine line : w.getPartLines()) {
+                if (line.getSparePart().getId().equals(sparePartId)) {
+                    line.setQuantity(line.getQuantity() + quantity);
+                    return;
+                }
+            }
+            WorkOrderPartLine line = new WorkOrderPartLine();
+            line.setWorkOrder(w);
+            line.setSparePart(part);
+            line.setQuantity(quantity);
+            w.getPartLines().add(line);
+            em.persist(line);
+        });
+    }
+
+    public void updatePartLineQuantityOnWorkOrder(Long workOrderId, Long partLineId, int quantity) {
+        requirePositiveQty(quantity);
+        JpaUtil.inTransaction(em -> {
+            WorkOrderPartLine line = em.find(WorkOrderPartLine.class, partLineId);
+            if (line == null) {
+                throw new IllegalArgumentException("Line not found");
+            }
+            WorkOrder w = line.getWorkOrder();
+            if (w == null || !w.getId().equals(workOrderId)) {
+                throw new IllegalArgumentException("Line does not belong to this work order");
+            }
+            assertEditable(w);
+            line.setQuantity(quantity);
+        });
+    }
+
+    public void removePartLineFromWorkOrder(Long workOrderId, Long partLineId) {
+        JpaUtil.inTransaction(em -> {
+            WorkOrderPartLine line = em.find(WorkOrderPartLine.class, partLineId);
+            if (line == null) {
+                return;
+            }
+            WorkOrder w = line.getWorkOrder();
+            if (w == null || !w.getId().equals(workOrderId)) {
+                throw new IllegalArgumentException("Line does not belong to this work order");
+            }
+            assertEditable(w);
+            Hibernate.initialize(w.getPartLines());
+            w.getPartLines().remove(line);
+            em.remove(line);
+        });
+    }
+
+    public void addServiceLineToWorkOrder(Long workOrderId, Long serviceOfferingId, int quantity) {
+        requirePositiveQty(quantity);
+        JpaUtil.inTransaction(em -> {
+            WorkOrder w = em.find(WorkOrder.class, workOrderId);
+            if (w == null) {
+                throw new IllegalArgumentException("Work order not found");
+            }
+            assertEditable(w);
+            Hibernate.initialize(w.getServiceLines());
+            ServiceOffering svc = em.find(ServiceOffering.class, serviceOfferingId);
+            if (svc == null || !svc.isActive()) {
+                throw new IllegalArgumentException("Service not found or inactive");
+            }
+            for (WorkOrderServiceLine line : w.getServiceLines()) {
+                if (line.getServiceOffering().getId().equals(serviceOfferingId)) {
+                    line.setQuantity(line.getQuantity() + quantity);
+                    return;
+                }
+            }
+            WorkOrderServiceLine line = new WorkOrderServiceLine();
+            line.setWorkOrder(w);
+            line.setServiceOffering(svc);
+            line.setQuantity(quantity);
+            w.getServiceLines().add(line);
+            em.persist(line);
+        });
+    }
+
+    public void updateServiceLineQuantityOnWorkOrder(Long workOrderId, Long serviceLineId, int quantity) {
+        requirePositiveQty(quantity);
+        JpaUtil.inTransaction(em -> {
+            WorkOrderServiceLine line = em.find(WorkOrderServiceLine.class, serviceLineId);
+            if (line == null) {
+                throw new IllegalArgumentException("Line not found");
+            }
+            WorkOrder w = line.getWorkOrder();
+            if (w == null || !w.getId().equals(workOrderId)) {
+                throw new IllegalArgumentException("Line does not belong to this work order");
+            }
+            assertEditable(w);
+            line.setQuantity(quantity);
+        });
+    }
+
+    public void removeServiceLineFromWorkOrder(Long workOrderId, Long serviceLineId) {
+        JpaUtil.inTransaction(em -> {
+            WorkOrderServiceLine line = em.find(WorkOrderServiceLine.class, serviceLineId);
+            if (line == null) {
+                return;
+            }
+            WorkOrder w = line.getWorkOrder();
+            if (w == null || !w.getId().equals(workOrderId)) {
+                throw new IllegalArgumentException("Line does not belong to this work order");
+            }
+            assertEditable(w);
+            Hibernate.initialize(w.getServiceLines());
             w.getServiceLines().remove(line);
             em.remove(line);
         });

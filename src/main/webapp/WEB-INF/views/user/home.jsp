@@ -10,20 +10,18 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Home - User</title>
+    <title>Home - Customer</title>
     <%@ include file="/WEB-INF/views/common/user-styles.jspf" %>
 </head>
 <body>
 <%@ include file="/WEB-INF/views/common/user-navbar.jspf" %>
 <div class="content">
     <div class="card">
-        <h1>User Home</h1>
-        <p>Search parts and services, build your work order, then submit for the admin to invoice.</p>
+        <h1>Welcome</h1>
+        <p>Search spare parts and services by name or code. Open an item to view full details.</p>
         <ul>
             <li><a href="<%= request.getContextPath() %>/home/parts">Browse parts</a></li>
             <li><a href="<%= request.getContextPath() %>/home/services">Browse services</a></li>
-            <li><a href="<%= request.getContextPath() %>/home/work-order">Current work order</a></li>
-            <li><a href="<%= request.getContextPath() %>/home/invoices">My invoices</a></li>
         </ul>
     </div>
 </div>

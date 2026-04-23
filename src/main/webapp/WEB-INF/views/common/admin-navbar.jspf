@@ -7,10 +7,9 @@
     <div>
         <strong>Gara Management</strong>
         <a href="<%= __cp %>/admin">Dashboard</a>
+        <a href="<%= __cp %>/admin/customers">Customers</a>
         <a href="<%= __cp %>/admin/parts">Parts</a>
         <a href="<%= __cp %>/admin/services">Services</a>
-        <a href="<%= __cp %>/admin/work-orders">Work Orders</a>
-        <a href="<%= __cp %>/admin/invoices">Invoices</a>
     </div>
     <div>
         <% if (__navUser != null) { %>

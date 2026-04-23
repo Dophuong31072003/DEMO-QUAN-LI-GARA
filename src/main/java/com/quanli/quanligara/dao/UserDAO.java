@@ -142,4 +142,26 @@ public class UserDAO {
             em.close();
         }
     }
+
+    /**
+     * Active non-admin users (customers) matching name, username, or email.
+     */
+    public List<User> findActiveCustomersByNameLike(String rawKeyword) {
+        String q = rawKeyword == null ? "" : rawKeyword.trim();
+        EntityManager em = emf.createEntityManager();
+        try {
+            String pattern = "%" + q.toUpperCase() + "%";
+            TypedQuery<User> query = em.createQuery(
+                    "SELECT u FROM User u WHERE u.isAdmin = false AND u.isActive = true "
+                            + "AND (UPPER(COALESCE(u.fullName, '')) LIKE :p "
+                            + "OR UPPER(u.username) LIKE :p "
+                            + "OR UPPER(COALESCE(u.email, '')) LIKE :p) "
+                            + "ORDER BY u.fullName, u.username",
+                    User.class);
+            query.setParameter("p", pattern);
+            return query.getResultList();
+        } finally {
+            em.close();
+        }
+    }
 }

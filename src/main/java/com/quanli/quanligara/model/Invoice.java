@@ -35,6 +35,9 @@ public class Invoice implements Serializable {
     @Column(name = "issued_at", nullable = false)
     private LocalDateTime issuedAt;
 
+    @Column(name = "paid_at")
+    private LocalDateTime paidAt;
+
     @Column(name = "total_amount", nullable = false, precision = 19, scale = 2)
     private BigDecimal totalAmount;
 
@@ -90,6 +93,14 @@ public class Invoice implements Serializable {
 
     public void setIssuedAt(LocalDateTime issuedAt) {
         this.issuedAt = issuedAt;
+    }
+
+    public LocalDateTime getPaidAt() {
+        return paidAt;
+    }
+
+    public void setPaidAt(LocalDateTime paidAt) {
+        this.paidAt = paidAt;
     }
 
     public BigDecimal getTotalAmount() {

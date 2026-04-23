@@ -1,6 +1,7 @@
 package com.quanli.quanligara.controller.admin;
 
 import com.quanli.quanligara.model.WorkOrder;
+import com.quanli.quanligara.service.CatalogService;
 import com.quanli.quanligara.service.InvoiceService;
 import com.quanli.quanligara.service.WorkOrderService;
 import jakarta.servlet.ServletException;
@@ -17,11 +18,13 @@ public class AdminWorkOrderDetailServlet extends HttpServlet {
 
     private WorkOrderService workOrderService;
     private InvoiceService invoiceService;
+    private CatalogService catalogService;
 
     @Override
     public void init() {
         workOrderService = new WorkOrderService();
         invoiceService = new InvoiceService();
+        catalogService = new CatalogService();
     }
 
     @Override
@@ -31,7 +34,13 @@ public class AdminWorkOrderDetailServlet extends HttpServlet {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing id");
             return;
         }
-        Long id = Long.parseLong(idParam);
+        Long id;
+        try {
+            id = Long.parseLong(idParam);
+        } catch (NumberFormatException e) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid id");
+            return;
+        }
         Optional<WorkOrder> wo = workOrderService.loadWorkOrderForDisplay(id);
         if (wo.isEmpty()) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -39,11 +48,26 @@ public class AdminWorkOrderDetailServlet extends HttpServlet {
         }
         request.setAttribute("workOrder", wo.get());
         request.setAttribute("canIssue", invoiceService.canIssueInvoice(id));
-        Object err = request.getSession().getAttribute("issueError");
+        request.setAttribute("catalogParts", catalogService.searchActiveParts(""));
+        request.setAttribute("catalogServices", catalogService.searchActiveServices(""));
+
+        jakarta.servlet.http.HttpSession session = request.getSession();
+        Object err = session.getAttribute("issueError");
         if (err != null) {
             request.setAttribute("error", err);
-            request.getSession().removeAttribute("issueError");
+            session.removeAttribute("issueError");
         }
+        Object flashErr = session.getAttribute("adminWorkOrderFlashError");
+        if (flashErr != null) {
+            request.setAttribute("error", flashErr);
+            session.removeAttribute("adminWorkOrderFlashError");
+        }
+        Object flashOk = session.getAttribute("adminWorkOrderFlashMessage");
+        if (flashOk != null) {
+            request.setAttribute("message", flashOk);
+            session.removeAttribute("adminWorkOrderFlashMessage");
+        }
+
         request.getRequestDispatcher("/WEB-INF/views/admin/work-order-detail.jsp").forward(request, response);
     }
 }

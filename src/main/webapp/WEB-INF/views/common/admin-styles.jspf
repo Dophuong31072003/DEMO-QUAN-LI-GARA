@@ -9,13 +9,20 @@
     .content { padding: 24px 30px; }
     .card {
         background: white; padding: 24px; border-radius: 8px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.08); max-width: 1100px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        max-width: none;
     }
     h1 { color: #333; margin-top: 0; }
     table { border-collapse: collapse; width: 100%; margin-top: 12px; }
     th, td { border: 1px solid #ddd; padding: 8px 10px; text-align: left; }
     th { background: #eee; }
     .error { color: #c0392b; margin: 8px 0; }
+    .message { color: #27ae60; margin: 8px 0; }
+    @media print {
+        .navbar, .no-print { display: none !important; }
+        .content { padding: 0; }
+        .card { box-shadow: none; }
+    }
     .muted { color: #666; font-size: 14px; }
     input[type=text], input[type=number], textarea { padding: 6px 8px; width: 100%; max-width: 320px; box-sizing: border-box; }
     button, .btn {
@@ -24,4 +31,29 @@
     }
     button.secondary { background: #7f8c8d; }
     form.inline { display: inline; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1.1fr; gap: 18px; align-items: start; }
+    @media (max-width: 1100px) { .grid-2 { grid-template-columns: 1fr; } }
+    .section { padding: 14px; border: 1px solid #eee; border-radius: 8px; background: #fff; }
+    .section h2 { margin-top: 0; }
+    .stack { display: flex; flex-direction: column; gap: 10px; }
+    .row { display: flex; gap: 10px; align-items: end; flex-wrap: wrap; }
+    .row > * { flex: 1; min-width: 220px; }
+    .row .tight { flex: 0 0 auto; min-width: auto; }
+    .small { font-size: 13px; }
+    .qty { width: 70px; max-width: 70px; }
+    .table-compact th, .table-compact td { padding: 6px 8px; }
+    .catalog-add { display: flex; gap: 6px; align-items: center; flex-wrap: nowrap; white-space: nowrap; }
+    .catalog-add .qty { width: 60px; max-width: 60px; }
+    .catalog-add button { padding: 6px 10px; }
+    .line-update { display: flex; gap: 6px; align-items: center; flex-wrap: nowrap; white-space: nowrap; }
+    .line-update .qty { width: 80px; max-width: 80px; }
+    .line-update button { padding: 6px 10px; }
+    .scrollbox {
+        max-height: 320px;
+        overflow: auto;
+        border: 1px solid #eee;
+        border-radius: 8px;
+        background: #fff;
+    }
+    .scrollbox table { margin-top: 0; }
 </style>

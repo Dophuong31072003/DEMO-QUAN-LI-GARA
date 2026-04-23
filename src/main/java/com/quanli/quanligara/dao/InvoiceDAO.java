@@ -78,6 +78,27 @@ public class InvoiceDAO {
         }
     }
 
+    /**
+     * Invoices whose customer (invoice user) matches name or username.
+     */
+    public List<Invoice> findByCustomerNameLike(String rawKeyword) {
+        String q = rawKeyword == null ? "" : rawKeyword.trim();
+        EntityManager em = JpaUtil.getEntityManagerFactory().createEntityManager();
+        try {
+            String pattern = "%" + q.toUpperCase() + "%";
+            TypedQuery<Invoice> query = em.createQuery(
+                    "SELECT DISTINCT i FROM Invoice i JOIN FETCH i.user u "
+                            + "WHERE UPPER(COALESCE(u.fullName, '')) LIKE :p "
+                            + "OR UPPER(u.username) LIKE :p "
+                            + "ORDER BY i.issuedAt DESC",
+                    Invoice.class);
+            query.setParameter("p", pattern);
+            return query.getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
     public void save(Invoice invoice) {
         EntityManager em = JpaUtil.getEntityManagerFactory().createEntityManager();
         try {

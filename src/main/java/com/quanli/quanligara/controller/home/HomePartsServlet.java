@@ -21,19 +21,6 @@ public class HomePartsServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        jakarta.servlet.http.HttpSession session = request.getSession(false);
-        if (session != null) {
-            Object fm = session.getAttribute("flashMessage");
-            if (fm != null) {
-                request.setAttribute("message", fm);
-                session.removeAttribute("flashMessage");
-            }
-            Object fe = session.getAttribute("flashError");
-            if (fe != null) {
-                request.setAttribute("error", fe);
-                session.removeAttribute("flashError");
-            }
-        }
         String q = request.getParameter("q");
         request.setAttribute("parts", catalogService.searchActiveParts(q == null ? "" : q));
         request.setAttribute("q", q == null ? "" : q);

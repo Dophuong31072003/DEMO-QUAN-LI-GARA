@@ -28,13 +28,28 @@ public class AdminInvoiceDetailServlet extends HttpServlet {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
-        Long id = Long.parseLong(idParam);
+        Long id;
+        try {
+            id = Long.parseLong(idParam);
+        } catch (NumberFormatException e) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+            return;
+        }
         Optional<Invoice> inv = invoiceService.loadInvoiceForDisplay(id);
         if (inv.isEmpty()) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
         request.setAttribute("invoice", inv.get());
+        String print = request.getParameter("print");
+        request.setAttribute("autoPrint", print != null && "1".equals(print));
+
+        Object flash = request.getSession().getAttribute("paymentsFlashMessage");
+        if (flash != null) {
+            request.setAttribute("message", flash);
+            request.getSession().removeAttribute("paymentsFlashMessage");
+        }
+
         request.getRequestDispatcher("/WEB-INF/views/admin/invoice-detail.jsp").forward(request, response);
     }
 }

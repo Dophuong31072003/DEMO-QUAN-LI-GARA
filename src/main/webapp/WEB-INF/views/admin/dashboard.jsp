@@ -20,10 +20,12 @@
         <h1>Admin Dashboard</h1>
         <p class="muted">Choose a module:</p>
         <ul>
+            <li><a href="<%= request.getContextPath() %>/admin/customers">Customers</a> — search customers and open quotations</li>
             <li><a href="<%= request.getContextPath() %>/admin/parts">Parts</a> — spare parts catalog</li>
             <li><a href="<%= request.getContextPath() %>/admin/services">Services</a> — service offerings</li>
-            <li><a href="<%= request.getContextPath() %>/admin/work-orders">Work Orders</a> — user drafts &amp; submissions</li>
+            <li><a href="<%= request.getContextPath() %>/admin/work-orders">Work Orders</a> — quotations &amp; submissions</li>
             <li><a href="<%= request.getContextPath() %>/admin/invoices">Invoices</a> — issued invoices</li>
+            <li><a href="<%= request.getContextPath() %>/admin/payments">Payments</a> — find invoices by customer, print, confirm payment</li>
         </ul>
     </div>
 </div>
