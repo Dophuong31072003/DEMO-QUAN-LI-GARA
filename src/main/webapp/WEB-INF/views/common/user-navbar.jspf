@@ -10,6 +10,7 @@
         <a href="<%= __ucp %>/home/parts">Parts</a>
         <a href="<%= __ucp %>/home/services">Services</a>
         <a href="<%= __ucp %>/home/work-order">Work Order</a>
+        <a href="<%= __ucp %>/home/work-orders">Work Orders</a>
         <a href="<%= __ucp %>/home/invoices">Invoices</a>
     </div>
     <div>

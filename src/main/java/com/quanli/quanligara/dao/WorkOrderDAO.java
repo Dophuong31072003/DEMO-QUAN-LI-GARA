@@ -131,6 +131,38 @@ public class WorkOrderDAO {
         }
     }
 
+    public Optional<WorkOrder> findWithLinesAndUser(Long id) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            WorkOrder wo = em.find(WorkOrder.class, id);
+            if (wo == null) {
+                return Optional.empty();
+            }
+            // Same 2-query trick, but also fetch user and nested catalog rows.
+            em.createQuery(
+                            "SELECT w FROM WorkOrder w " +
+                                    "JOIN FETCH w.user " +
+                                    "LEFT JOIN FETCH w.partLines pl " +
+                                    "LEFT JOIN FETCH pl.sparePart " +
+                                    "WHERE w.id = :id",
+                            WorkOrder.class)
+                    .setParameter("id", id)
+                    .getSingleResult();
+            em.createQuery(
+                            "SELECT w FROM WorkOrder w " +
+                                    "JOIN FETCH w.user " +
+                                    "LEFT JOIN FETCH w.serviceLines sl " +
+                                    "LEFT JOIN FETCH sl.serviceOffering " +
+                                    "WHERE w.id = :id",
+                            WorkOrder.class)
+                    .setParameter("id", id)
+                    .getSingleResult();
+            return Optional.of(wo);
+        } finally {
+            em.close();
+        }
+    }
+
     public void save(WorkOrder workOrder) {
         EntityManager em = emf.createEntityManager();
         try {

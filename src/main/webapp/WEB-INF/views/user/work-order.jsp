@@ -29,6 +29,7 @@
         %>
         <% if (wo != null) { %>
         <p>Status: <strong><%= wo.getStatus() %></strong></p>
+        <p><a href="<%= cp %>/home/work-orders">View previous work orders</a></p>
         <h2>Parts</h2>
         <table>
             <thead>
