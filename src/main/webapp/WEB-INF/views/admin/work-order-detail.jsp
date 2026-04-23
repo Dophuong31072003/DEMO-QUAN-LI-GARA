@@ -209,8 +209,6 @@
                 <% } else { %>
                 <p class="muted">Add at least one line before issuing an invoice.</p>
                 <% } %>
-
-                <p class="no-print"><a href="<%= cp %>/admin/work-orders">← Back to list</a> · <a href="<%= cp %>/admin/customers">Customers</a></p>
             </div>
         </div>
 
