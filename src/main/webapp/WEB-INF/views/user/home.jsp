@@ -11,40 +11,21 @@
 <html>
 <head>
     <title>Home - User</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 0; background: #f5f5f5; }
-        .navbar {
-            background: #667eea; color: white; padding: 15px 30px;
-            display: flex; justify-content: space-between; align-items: center;
-        }
-        .navbar a { color: white; text-decoration: none; margin-left: 20px; }
-        .content { padding: 40px; }
-        .card {
-            background: white; padding: 30px; border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1); max-width: 800px;
-        }
-        h1 { color: #333; }
-        .badge {
-            background: #27ae60; color: white; padding: 4px 12px;
-            border-radius: 12px; font-size: 12px;
-        }
-    </style>
+    <%@ include file="/WEB-INF/views/common/user-styles.jspf" %>
 </head>
 <body>
-    <div class="navbar">
-        <div><strong>Quan Li Gara</strong></div>
-        <div>
-            <span>Welcome, <%= currentUser.getFullName() %></span>
-            <span class="badge"><%= currentUser.getRoleName() %></span>
-            <a href="<%= request.getContextPath() %>/logout">Logout</a>
-        </div>
+<%@ include file="/WEB-INF/views/common/user-navbar.jspf" %>
+<div class="content">
+    <div class="card">
+        <h1>User Home</h1>
+        <p>Search parts and services, build your work order, then submit for the admin to invoice.</p>
+        <ul>
+            <li><a href="<%= request.getContextPath() %>/home/parts">Browse parts</a></li>
+            <li><a href="<%= request.getContextPath() %>/home/services">Browse services</a></li>
+            <li><a href="<%= request.getContextPath() %>/home/work-order">Current work order</a></li>
+            <li><a href="<%= request.getContextPath() %>/home/invoices">My invoices</a></li>
+        </ul>
     </div>
-    <div class="content">
-        <div class="card">
-            <h1>User Home</h1>
-            <p>Day la trang danh cho nhan vien.</p>
-            <p>Chuc nang thao tac se duoc trien khai tai day.</p>
-        </div>
-    </div>
+</div>
 </body>
 </html>

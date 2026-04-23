@@ -3,7 +3,7 @@
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
              xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_2.xsd"
              version="3.2">
-    <persistence-unit name="default">
+    <persistence-unit name="test-unit">
         <class>com.quanli.quanligara.model.User</class>
         <class>com.quanli.quanligara.model.SparePart</class>
         <class>com.quanli.quanligara.model.ServiceOffering</class>
@@ -13,14 +13,14 @@
         <class>com.quanli.quanligara.model.Invoice</class>
         <class>com.quanli.quanligara.model.InvoiceLine</class>
         <properties>
-            <property name="jakarta.persistence.schema-generation.database.action" value="update"/>
+            <property name="jakarta.persistence.schema-generation.database.action" value="create"/>
+            <property name="jakarta.persistence.jdbc.driver" value="org.h2.Driver"/>
+            <property name="jakarta.persistence.jdbc.url" value="jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1"/>
+            <property name="jakarta.persistence.jdbc.user" value="sa"/>
+            <property name="jakarta.persistence.jdbc.password" value=""/>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
             <property name="hibernate.show_sql" value="true"/>
             <property name="hibernate.format_sql" value="true"/>
-            <property name="jakarta.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"/>
-            <property name="jakarta.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/quanligara?useSSL=false&amp;serverTimezone=UTC"/>
-            <property name="jakarta.persistence.jdbc.user" value="root"/>
-            <property name="jakarta.persistence.jdbc.password" value="password"/>
         </properties>
-
     </persistence-unit>
 </persistence>

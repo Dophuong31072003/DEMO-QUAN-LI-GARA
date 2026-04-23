@@ -1,0 +1,21 @@
+<%@ page import="com.quanli.quanligara.model.User" %>
+<%
+    User __unav = (User) session.getAttribute("currentUser");
+    String __ucp = request.getContextPath();
+%>
+<div class="navbar userbar">
+    <div>
+        <strong>Gara Management</strong>
+        <a href="<%= __ucp %>/home">Home</a>
+        <a href="<%= __ucp %>/home/parts">Parts</a>
+        <a href="<%= __ucp %>/home/services">Services</a>
+        <a href="<%= __ucp %>/home/work-order">Work Order</a>
+        <a href="<%= __ucp %>/home/invoices">Invoices</a>
+    </div>
+    <div>
+        <% if (__unav != null) { %>
+        <span><%= __unav.getFullName() %></span>
+        <a href="<%= __ucp %>/logout">Logout</a>
+        <% } %>
+    </div>
+</div>

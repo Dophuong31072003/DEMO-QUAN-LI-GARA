@@ -1,0 +1,12 @@
+[2026-04-24T01:11:42+07:00] BUILD SUCCESS after entity creation
+
+Compiled entities:
+- /Users/duwscan/IdeaProjects/quanligara/target/classes/com/quanli/quanligara/model/SparePart.class (4469 bytes)
+- /Users/duwscan/IdeaProjects/quanligara/target/classes/com/quanli/quanligara/model/ServiceOffering.class (existing)
+- /Users/duwscan/IdeaProjects/quanligara/target/classes/com/quanli/quanligara/model/WorkOrder.class (3585 bytes)
+- /Users/duwscan/IdeaProjects/quanligara/target/classes/com/quanli/quanligara/model/WorkOrderPartLine.class (existing)
+- /Users/duwscan/IdeaProjects/quanligara/target/classes/com/quanli/quanligara/model/WorkOrderServiceLine.class (existing)
+- /Users/duwscan/IdeaProjects/quanligara/target/classes/com/quanli/quanligara/model/Invoice.class (4238 bytes)
+- /Users/duwscan/IdeaProjects/quanligara/target/classes/com/quanli/quanligara/model/InvoiceLine.class (existing)
+
+Result: SUCCESS

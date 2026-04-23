@@ -1,8 +1,16 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%
+    String as = request.getParameter("as");
+    boolean isAdminLogin = "admin".equalsIgnoreCase(as);
+    boolean isCustomerLogin = "customer".equalsIgnoreCase(as) || "user".equalsIgnoreCase(as);
+    String preUser = isAdminLogin ? "admin" : (isCustomerLogin ? "user" : "");
+    String prePass = isAdminLogin ? "admin" : (isCustomerLogin ? "user" : "");
+    String title = isAdminLogin ? "Admin Login" : (isCustomerLogin ? "Customer Login" : "Login");
+%>
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Quan Li Gara - Login</title>
+    <title>Gara Management - <%= title %></title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -68,25 +76,25 @@
 </head>
 <body>
     <div class="login-box">
-        <h2>Quan Li Gara</h2>
+        <h2><%= title %></h2>
         <% if (request.getAttribute("error") != null) { %>
             <div class="error"><%= request.getAttribute("error") %></div>
         <% } %>
         <form action="<%= request.getContextPath() %>/login" method="post">
             <div class="form-group">
                 <label>Username</label>
-                <input type="text" name="username" required>
+                <input type="text" name="username" value="<%= preUser %>" required>
             </div>
             <div class="form-group">
                 <label>Password</label>
-                <input type="password" name="password" required>
+                <input type="password" name="password" value="<%= prePass %>" required>
             </div>
             <button type="submit">Login</button>
         </form>
         <div class="info">
             <p>Demo accounts:</p>
-            <p>admin / admin (Admin)</p>
-            <p>user / user (User)</p>
+            <p>Admin: <strong>admin / admin</strong></p>
+            <p>Customer: <strong>user / user</strong></p>
         </div>
     </div>
 </body>
