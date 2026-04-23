@@ -38,6 +38,10 @@ public class CatalogService {
         sparePartDAO.deactivate(id);
     }
 
+    public void deleteSparePart(Long id) {
+        sparePartDAO.delete(id);
+    }
+
     public List<SparePart> listAllSpareParts() {
         return sparePartDAO.findAllForAdmin();
     }
@@ -67,6 +71,10 @@ public class CatalogService {
 
     public void deactivateServiceOffering(Long id) {
         serviceOfferingDAO.deactivate(id);
+    }
+
+    public void deleteServiceOffering(Long id) {
+        serviceOfferingDAO.delete(id);
     }
 
     public List<ServiceOffering> listAllServiceOfferings() {

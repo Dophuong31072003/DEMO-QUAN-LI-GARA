@@ -28,7 +28,7 @@
             <p><button type="submit">Create</button></p>
         </form>
 
-        <h2>Active services</h2>
+        <h2>Services</h2>
         <table>
             <thead>
             <tr><th>Code</th><th>Name</th><th>Price</th><th>Actions</th></tr>
@@ -40,7 +40,6 @@
                 if (services != null) {
                     for (ServiceOffering s : services) {
             %>
-            <% if (!s.isActive()) { continue; } %>
             <tr>
                 <td><%= s.getCode() %></td>
                 <td><%= s.getName() %></td>
@@ -53,7 +52,7 @@
                         <input type="text" name="unitPrice" value="<%= s.getUnitPrice() != null ? s.getUnitPrice().toPlainString() : "" %>" style="max-width:80px">
                         <button type="submit">Save</button>
                     </form>
-                    <form method="post" action="<%= request.getContextPath() %>/admin/services/deactivate" class="inline" onsubmit="return confirm('Soft delete this service?');">
+                    <form method="post" action="<%= request.getContextPath() %>/admin/services/deactivate" class="inline" onsubmit="return confirm('Delete this service?');">
                         <input type="hidden" name="id" value="<%= s.getId() %>">
                         <button type="submit" class="secondary">Delete</button>
                     </form>

@@ -30,7 +30,7 @@
             <p><button type="submit">Create</button></p>
         </form>
 
-        <h2>Active parts</h2>
+        <h2>Parts</h2>
         <table>
             <thead>
             <tr><th>Code</th><th>Name</th><th>Price</th><th>Stock</th><th>Actions</th></tr>
@@ -42,7 +42,6 @@
                 if (parts != null) {
                     for (SparePart p : parts) {
             %>
-            <% if (!p.isActive()) { continue; } %>
             <tr>
                 <td><%= p.getCode() %></td>
                 <td><%= p.getName() %></td>
@@ -57,7 +56,7 @@
                         <input type="number" name="stockQuantity" value="<%= p.getStockQuantity() %>" style="max-width:60px">
                         <button type="submit">Save</button>
                     </form>
-                    <form method="post" action="<%= request.getContextPath() %>/admin/parts/deactivate" class="inline" onsubmit="return confirm('Soft delete this part?');">
+                    <form method="post" action="<%= request.getContextPath() %>/admin/parts/deactivate" class="inline" onsubmit="return confirm('Delete this part?');">
                         <input type="hidden" name="id" value="<%= p.getId() %>">
                         <button type="submit" class="secondary">Delete</button>
                     </form>

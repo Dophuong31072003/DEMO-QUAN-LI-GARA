@@ -112,6 +112,25 @@ public class ServiceOfferingDAO {
         }
     }
 
+    public void delete(Long id) {
+        EntityManager em = JpaUtil.getEntityManagerFactory().createEntityManager();
+        try {
+            em.getTransaction().begin();
+            ServiceOffering offering = em.find(ServiceOffering.class, id);
+            if (offering != null) {
+                em.remove(offering);
+            }
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            throw e;
+        } finally {
+            em.close();
+        }
+    }
+
     public boolean existsByCode(String code) {
         EntityManager em = JpaUtil.getEntityManagerFactory().createEntityManager();
         try {

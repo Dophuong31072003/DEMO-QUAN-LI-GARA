@@ -133,6 +133,25 @@ public class SparePartDAO {
         }
     }
 
+    public void delete(Long id) {
+        EntityManager em = JpaUtil.getEntityManagerFactory().createEntityManager();
+        try {
+            em.getTransaction().begin();
+            SparePart part = em.find(SparePart.class, id);
+            if (part != null) {
+                em.remove(part);
+            }
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            throw e;
+        } finally {
+            em.close();
+        }
+    }
+
     public boolean existsByCode(String code) {
         EntityManager em = JpaUtil.getEntityManagerFactory().createEntityManager();
         try {

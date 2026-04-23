@@ -23,10 +23,11 @@ public class AdminPartsDeactivateServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
             Long id = Long.parseLong(request.getParameter("id"));
-            catalogService.deactivateSparePart(id);
-            request.getSession().setAttribute("flashMessage", "Part deleted (soft delete).");
+            catalogService.deleteSparePart(id);
+            request.getSession().setAttribute("flashMessage", "Part deleted.");
         } catch (Exception e) {
-            request.getSession().setAttribute("flashError", e.getMessage());
+            request.getSession().setAttribute("flashError",
+                    "Cannot delete part (it may be referenced by a work order or invoice). " + e.getMessage());
         }
         response.sendRedirect(request.getContextPath() + "/admin/parts");
     }
